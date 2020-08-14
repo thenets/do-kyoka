@@ -3,35 +3,32 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/digitalocean/godo"
-	"github.com/spf13/viper"
 	"github.com/thenets/do-kyoka/helper"
 )
 
 func main() {
-	// Read config file
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("/etc/do-kyoka/")
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
-	}
-
-	// Params
-	firewallName := viper.GetString("firewall.name")
+	// Read env vars
+	firewallName := os.Getenv("FIREWALL_NAME")
 	if firewallName == "" {
-		panic("[ERROR] 'firewall.name' not set in config file!")
+		panic("[ERROR] 'FIREWALL_NAME' not set in config file!")
 	}
-	tagName := viper.GetString("firewall.tag")
+	tagName := os.Getenv("FIREWALL_TAG")
 	if tagName == "" {
-		panic("[ERROR] 'firewall.tag' not set in config file!")
+		panic("[ERROR] 'FIREWALL_TAG' not set in config file!")
 	}
-	apiToken := viper.GetString("apiToken")
+	apiToken := os.Getenv("DO_API_TOKEN")
 	if tagName == "" {
-		panic("[ERROR] 'apiToken' not set in config file!")
+		panic("[ERROR] 'DO_API_TOKEN' not set in config file!")
 	}
+	
+	// DEBUG
+	fmt.Println("firewallName", firewallName)
+	fmt.Println("tagName", tagName)
+	fmt.Println("apiToken", apiToken)
+	return
 
 	// Firewall: allow my current IP
 	client := godo.NewFromToken(apiToken)
