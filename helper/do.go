@@ -125,7 +125,7 @@ func FirewallAllowMyCurrentIp(ctx context.Context, client *godo.Client, firewall
 		InboundRules: []godo.InboundRule{
 			{
 				Protocol:  "tcp",
-				PortRange: "22",
+				PortRange: "all",
 				Sources: &godo.Sources{
 					Addresses: []string{currentIp},
 				},

@@ -5,12 +5,12 @@ go-run:
 
 build:
 	docker build --pull --rm \
-	-f "Dockerfile" \
-	-t $(IMAGE_TAG) "."
+		-f "Dockerfile" \
+		-t $(IMAGE_TAG) "."
 
 run:
 	docker run --rm -it \
-	-e FIREWALL_NAME=$(FIREWALL_NAME) \
-	-e FIREWALL_TAG=$(FIREWALL_TAG) \
-	-e DO_API_TOKEN=$(DO_API_TOKEN) \
-	$(IMAGE_TAG)
+		-e FIREWALL_NAME=$(FIREWALL_NAME) \
+		-e FIREWALL_TAG=$(FIREWALL_TAG) \
+		-e DO_API_TOKEN=$(DO_API_TOKEN) \
+		$(IMAGE_TAG)
