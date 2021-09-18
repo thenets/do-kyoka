@@ -28,6 +28,8 @@ The `do-kyoka` creates a firewall at Digital Ocean that allows you to join your 
 Container image:
 - `quay.io/thenets/do-kyoka:latest`
 
+![do-kyoka diagram](./do-kyoka-diagram.png)
+
 ### 🛠 Environment variables
 
 - `DO_API_TOKEN`: `[required]` Digital Ocean API token with `write` permission. NEVER SHARE IT WITH ANYONE.
