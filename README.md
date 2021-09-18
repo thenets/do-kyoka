@@ -6,6 +6,8 @@ Auto-update Digital Ocean 🌊 firewall. The easiest way to access all your inst
 
 It gets your public IP address and creates/updates a firewall at Digital Ocean that allows you to join your instances.
 
+![do-kyoka diagram](./do-kyoka-diagram.png)
+
 ## 👨‍💻 Motivation
 
 Digital Ocean is a very good cloud provider for developers who want an easy way to deploy their applications. No fancy features. Just create a droplet (VM), jump into the instance and play with it.
@@ -27,8 +29,6 @@ The `do-kyoka` creates a firewall at Digital Ocean that allows you to join your 
 
 Container image:
 - `quay.io/thenets/do-kyoka:latest`
-
-![do-kyoka diagram](./do-kyoka-diagram.png)
 
 ### 🛠 Environment variables
 
