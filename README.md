@@ -14,7 +14,7 @@ The problem is: many times I don't want to have an instance joining my VPN but I
 
 So, this project is my attempt to solve my problem to allow me to access everything that I want without exposing my application everywhere or deploying my instance in one specific VPC, or joining into my VPN.
 
-> 🔴 This solution IS NOT DESIGNED FOR PRODUCTION. You must you VPN and a private network to have a secure environment and not expose your application to the internet.
+> 🔴 This solution IS NOT DESIGNED FOR PRODUCTION. You must use a VPN and a private network to have a secure environment and not expose your application to the internet.
 
 ## 📚 Requirements
 
