@@ -2,8 +2,8 @@ IMAGE_TAG=thenets/do-kyoka
 
 LOAD_ENVS=FIREWALL_NAME=do-kyoka \
 	FIREWALL_TAG=do-kyoka \
-	DO_API_TOKEN=$$(secret-tool lookup thenets_dev do_api_token) \
-	SENTRY_DSN=$$(secret-tool lookup thenets_dev do_kyoka_sentry_dsn)
+	DO_API_TOKEN=$$(make -s get-sentry-dsn) \
+	SENTRY_DSN=$$(make -s get-do-api-token)
 
 go-run:
 	$(LOAD_ENVS) go run main.go
@@ -28,7 +28,17 @@ set-sentry-dsn:
 		--label "TheNets Dev: Sentry DSN" \
 		thenets_dev do_kyoka_sentry_dsn $(SENTRY_DSN)
 
+get-sentry-dsn:
+	@if [ -x "$$(command -v secret-tool)" ]; then \
+		secret-tool lookup thenets_dev do_kyoka_sentry_dsn; \
+	fi
+
 set-do-api-token:
 	secret-tool store \
 		--label "TheNets Dev: DigitalOcean API Token" \
 		thenets_dev do_api_token $(DO_API_TOKEN)
+
+get-do-api-token:
+	@if [ -x "$$(command -v secret-tool)" ]; then \
+		secret-tool lookup thenets_dev do_api_token; \
+	fi
