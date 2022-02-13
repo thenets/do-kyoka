@@ -2,8 +2,8 @@ IMAGE_TAG=thenets/do-kyoka
 
 LOAD_ENVS=FIREWALL_NAME=do-kyoka \
 	FIREWALL_TAG=do-kyoka \
-	DO_API_TOKEN=$$(make -s get-sentry-dsn) \
-	SENTRY_DSN=$$(make -s get-do-api-token)
+	DO_API_TOKEN=$$(make -s get-do-api-token) \
+	SENTRY_DSN=$$(make -s get-sentry-dsn)
 
 go-run:
 	$(LOAD_ENVS) go run main.go
