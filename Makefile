@@ -6,7 +6,7 @@ LOAD_ENVS=FIREWALL_NAME=do-kyoka \
 	SENTRY_DSN=$$(make -s get-sentry-dsn)
 
 go-run:
-	$(LOAD_ENVS) go run main.go
+	$(LOAD_ENVS) go run do-kyoka.go
 
 build:
 	docker build --pull --rm \

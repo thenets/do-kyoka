@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	sentry "github.com/getsentry/sentry-go"
 	"github.com/jasonlvhit/gocron"
@@ -265,7 +266,12 @@ func main() {
 		})
 		if err != nil {
 			log.Fatalf("sentry.Init: %s", err)
+		} else {
+			sentry_server_domain := strings.Split(strings.Split(sentry_dsn, "@")[1], "/")[0]
+			log.Info("Sentry initialized: " + sentry_server_domain)
 		}
+
+
 	}
 
 	// Run updateFirewall once
