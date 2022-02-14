@@ -146,7 +146,7 @@ func FirewallAllowMyCurrentIp(ctx context.Context, client *godo.Client, firewall
 	// Get current public IP
 	currentIp, err := GetMyPublicIp()
 	if err != nil {
-		panic("[ERROR] Can't get public IP address!")
+		log.Panic("[ERROR] Can't get public IP address!")
 	}
 	// fmt.Println(currentIp)
 
