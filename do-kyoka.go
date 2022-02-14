@@ -9,16 +9,18 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"time"
 
-	sentry "github.com/getsentry/sentry-go"
 	"github.com/jasonlvhit/gocron"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
+
+	log "github.com/thenets/go-sentry-logger"
 
 	"github.com/digitalocean/godo"
 )
 
 func GetMyPublicIp() (string, error) {
+	// Use CloudFlare instead
+	// https://cloudflare.com/cdn-cgi/trace
 	// https://gist.github.com/ankanch/8c8ec5aaf374039504946e7e2b2cdf7f
 	url := "https://api.ipify.org?format=text"
 	// fmt.Println("Getting IP address from 'ipify'...")
@@ -35,6 +37,7 @@ func GetMyPublicIp() (string, error) {
 	}
 
 	log.Info("Public IP identified: " + string(ip))
+	log.CaptureMessage("yay! " + string(ip))
 
 	return string(ip), nil
 }
@@ -215,7 +218,7 @@ func updateFirewall() {
 	firewall, err := FirewallAllowMyCurrentIp(ctx, client, firewallName, tagName)
 	if err != nil {
 		// Output Firewall information
-		log.WithFields(log.Fields{
+		logrus.WithFields(logrus.Fields{
 			"ID": firewall.ID,
 			// "Name":          firewall.Name,
 			// "Status":        firewall.Status,
@@ -225,7 +228,7 @@ func updateFirewall() {
 	}
 
 	// Output Firewall information
-	log.WithFields(log.Fields{
+	logrus.WithFields(logrus.Fields{
 		"ID": firewall.ID,
 		// "Name":          firewall.Name,
 		// "Status":        firewall.Status,
@@ -235,9 +238,6 @@ func updateFirewall() {
 }
 
 func main() {
-	// Set log level to Debug
-	log.SetLevel(log.DebugLevel)
-
 	// Run command $(make load-envs)
 	stdout_bytes, err := exec.Command("make", "-s", "load-envs").Output()
 	if err != nil {
@@ -258,21 +258,23 @@ func main() {
 	if os.Getenv("SENTRY_DSN") != "" {
 		// Initialize Sentry
 		sentry_dsn := os.Getenv("SENTRY_DSN")
-		log.Debug("Initializing Sentry...")
-		log.Debug("Sentry DSN: " + sentry_dsn)
+		logger, err := log.NewSession(sentry_dsn)
 
-		err := sentry.Init(sentry.ClientOptions{
-			Dsn: sentry_dsn,
-		})
 		if err != nil {
-			log.Fatalf("sentry.Init: %s", err)
-		} else {
-			sentry_server_domain := strings.Split(strings.Split(sentry_dsn, "@")[1], "/")[0]
-			log.Info("Sentry initialized: " + sentry_server_domain)
+			fmt.Println("[ERROR] Can't initialize Sentry Logger!", err)
 		}
 
-
+		// Set panic handler
+		defer func() {
+			if err := recover(); err != nil {
+				logger.Panic(err)
+			}
+		}()
 	}
+
+	// log.Panic("test")
+
+	// os.Exit(0)
 
 	// Run updateFirewall once
 	updateFirewall()
