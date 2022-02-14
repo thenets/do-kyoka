@@ -239,18 +239,22 @@ func updateFirewall() {
 
 func main() {
 	// Run command $(make load-envs)
-	stdout_bytes, err := exec.Command("make", "-s", "load-envs").Output()
-	if err != nil {
-		log.Error(err)
-	}
-	stdout := string(stdout_bytes)[:len(stdout_bytes)-1]
-	log.Debug("Envs from makefile: " + stdout)
+	if _, err := os.Stat("/usr/bin/make"); os.IsNotExist(err) {
+		log.Debug("'make' binary not found. Ignoring local dev env load")
+	} else {
+		stdout_bytes, err := exec.Command("make", "-s", "load-envs").Output()
+		if err != nil {
+			log.Error(err)
+		}
+		stdout := string(stdout_bytes)[:len(stdout_bytes)-1]
+		log.Debug("Envs from makefile: " + stdout)
 
-	// Parse envs to a list from $(make load-envs)
-	for _, env := range strings.Split(stdout, " ") {
-		env_splits := strings.Split(env, "=")
-		if len(env_splits) > 1 && env_splits[1] != "" {
-			os.Setenv(strings.TrimSpace(env_splits[0]), strings.TrimSpace(env_splits[1]))
+		// Parse envs to a list from $(make load-envs)
+		for _, env := range strings.Split(stdout, " ") {
+			env_splits := strings.Split(env, "=")
+			if len(env_splits) > 1 && env_splits[1] != "" {
+				os.Setenv(strings.TrimSpace(env_splits[0]), strings.TrimSpace(env_splits[1]))
+			}
 		}
 	}
 
@@ -271,10 +275,6 @@ func main() {
 			}
 		}()
 	}
-
-	// log.Panic("test")
-
-	// os.Exit(0)
 
 	// Run updateFirewall once
 	updateFirewall()
