@@ -9,11 +9,14 @@ go-run:
 	$(LOAD_ENVS) go run *.go
 
 build:
+	go build -o do-kyoka .
+
+docker-build:
 	docker build --pull --rm \
 		-f "Dockerfile" \
 		-t $(IMAGE_TAG) "."
 
-run:
+docker-run: docker-build
 	$(LOAD_ENVS) docker run --rm -it \
 		-e FIREWALL_NAME=$(FIREWALL_NAME) \
 		-e FIREWALL_TAG=$(FIREWALL_TAG) \
@@ -30,7 +33,7 @@ set-sentry-dsn:
 
 get-sentry-dsn:
 	@if [ -x "$$(command -v secret-tool)" ]; then \
-		secret-tool lookup thenets_dev do_kyoka_sentry_dsn; \
+		secret-tool lookup thenets_dev do_kyoka_sentry_dsn 2>/dev/null || true; \
 	fi
 
 set-do-api-token:
@@ -40,5 +43,5 @@ set-do-api-token:
 
 get-do-api-token:
 	@if [ -x "$$(command -v secret-tool)" ]; then \
-		secret-tool lookup thenets_dev do_api_token; \
+		secret-tool lookup thenets_dev do_api_token 2>/dev/null || true; \
 	fi

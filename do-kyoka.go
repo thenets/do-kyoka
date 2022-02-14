@@ -240,8 +240,6 @@ func updateFirewall() {
 func main() {
 	// Run command $(make load-envs)
 	if _, err := os.Stat("/usr/bin/make"); os.IsNotExist(err) {
-		log.Debug("'make' binary not found. Ignoring local dev env load")
-	} else {
 		stdout_bytes, err := exec.Command("make", "-s", "load-envs").Output()
 		if err != nil {
 			log.Error(err)
@@ -256,6 +254,8 @@ func main() {
 				os.Setenv(strings.TrimSpace(env_splits[0]), strings.TrimSpace(env_splits[1]))
 			}
 		}
+	} else {
+		log.Debug("'make' binary not found. Ignoring local dev env load")
 	}
 
 	// Check if env var SENTRY_DSN is set

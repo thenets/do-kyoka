@@ -1,18 +1,14 @@
-# Build
-FROM golang:alpine
+FROM docker.io/golang:latest
 WORKDIR $GOPATH/src/github.com/thenets/do-kyoka
-RUN apk add git
+RUN set -x \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        git
 COPY . .
 ENV GO111MODULE auto
-RUN go get -d -v ./...
-RUN go build -o /tmp/do-kyoka
-RUN chmod +x /tmp/do-kyoka
-
-# Server
-FROM alpine
-ENV FIREWALL_NAME=
-RUN adduser -S -D -H -h /app/ kyoka
-USER kyoka
-WORKDIR /app/
-COPY --from=0 /tmp/do-kyoka ./
-CMD ["./do-kyoka"]
+RUN set -x \
+    && go get -d -v ./... \
+    && go build -ldflags="-extldflags=-static" -o /app/do-kyoka \
+    && chmod +x /app/do-kyoka
+ENTRYPOINT []
+CMD ["/app/do-kyoka"]
