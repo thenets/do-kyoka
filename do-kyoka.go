@@ -22,8 +22,7 @@ func GetMyPublicIp() (string, error) {
 	// Use CloudFlare instead
 	// https://cloudflare.com/cdn-cgi/trace
 	// https://gist.github.com/ankanch/8c8ec5aaf374039504946e7e2b2cdf7f
-	url := "https://api.ipify.org?format=text"
-	// fmt.Println("Getting IP address from 'ipify'...")
+	url := "https://cloudflare.com/cdn-cgi/trace"
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -31,13 +30,28 @@ func GetMyPublicIp() (string, error) {
 	}
 	defer resp.Body.Close()
 
-	ip, err := ioutil.ReadAll(resp.Body)
+	response, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "nil", err
 	}
 
-	log.Info("Public IP identified: " + string(ip))
-	log.CaptureMessage("yay! " + string(ip))
+	// Iterate for each line in response
+	var ip string
+	lines := strings.Split(string(response), "\n")
+	for _, line := range lines {
+		// Check line with 'ip=' prefix
+		if strings.HasPrefix(line, "ip=") {
+			ip = strings.TrimSpace(strings.TrimPrefix(line, "ip="))
+			// Validate IP format
+			if net.ParseIP(ip) == nil {
+				log.Fatal(fmt.Sprintf("Content received from CloudFlare is not a valid IP address: '%s'", ip))
+			}
+
+			// Get IP address
+			log.Info("Public IP identified: " + string(ip))
+			return ip, nil
+		}
+	}
 
 	return string(ip), nil
 }
@@ -218,13 +232,7 @@ func updateFirewall() {
 	firewall, err := FirewallAllowMyCurrentIp(ctx, client, firewallName, tagName)
 	if err != nil {
 		// Output Firewall information
-		logrus.WithFields(logrus.Fields{
-			"ID": firewall.ID,
-			// "Name":          firewall.Name,
-			// "Status":        firewall.Status,
-			"InboundRules":  firewall.InboundRules,
-			"OutboundRules": firewall.OutboundRules,
-		}).Error(fmt.Sprintf("firewall '%s' update %s", firewall.Name, firewall.Status))
+		log.Error(err)
 	}
 
 	// Output Firewall information
